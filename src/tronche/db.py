@@ -46,4 +46,12 @@ if __name__ == '__main__':
 	for domain in Collectd('collectd/collectd/'):
 		#print domain.sondes
 		for r in domain.sondes['load']:
-			print r.getData()
+			attrs = r.getData()
+			print "last update", attrs["lastupdate"]
+			print "file name", attrs['filename']
+			print "step", attrs['step']
+			print "ds", len(r.ds)
+			print "rra", len(r.rra)
+			for ds in r.ds:
+				data = ds.getData()
+				print data['name'], data.keys()
