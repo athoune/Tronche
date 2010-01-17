@@ -28,7 +28,7 @@ class Query(object):
 			buff += ' -e %s' % self._end
 		return Popen(buff, shell=True, stdout=PIPE).stdout
 
-def AVERAGE(path):
+def AVERAGE(path = None):
 	return Query('AVERAGE', path)
 def MIN(path):
 	return Query('MIN', path)
@@ -42,15 +42,17 @@ class RRD(object):
 		self.path = path
 	def fetch(self, query):
 		return Popen('rrdtool fetch %s %s' % (self.path, query), shell=True, stdout=PIPE).stdout
+	def query(self, query):
+		query.path = path
+		return query
 
 if __name__ == '__main__':
 	import time
 	chrono = time.time()
-	"""
 	r = RRD('collectd/collectd/rrd/localhost.localdomain/load/load.rrd')
-	print r.fetch(' AVERAGE -r 10 -s -10m').read()
-	"""
+	#print r.fetch(' AVERAGE -r 10 -s -10m').read()
 	path = 'collectd/collectd/rrd/localhost.localdomain/load/load.rrd'
-	print AVERAGE(path).resolution(10).start('-10m').execute().read()
+	for line in r.query(AVERAGE().resolution(10).start('-10m')).execute():
+		print line
 	print (time.time() -chrono) *1000 , 'ms'
 	
