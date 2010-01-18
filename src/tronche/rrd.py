@@ -43,16 +43,17 @@ class RRD(object):
 	def fetch(self, query):
 		return Popen('rrdtool fetch %s %s' % (self.path, query), shell=True, stdout=PIPE).stdout
 	def query(self, query):
-		query.path = path
+		query.path = self.path
 		return query
 
 if __name__ == '__main__':
 	import time
+	import os
 	chrono = time.time()
-	r = RRD('collectd/collectd/rrd/localhost.localdomain/load/load.rrd')
-	#print r.fetch(' AVERAGE -r 10 -s -10m').read()
-	path = 'collectd/collectd/rrd/localhost.localdomain/load/load.rrd'
-	for line in r.query(AVERAGE().resolution(10).start('-10m')).execute():
-		print line
+	for domain in os.listdir('collectd/collectd/rrd/') :
+		print domain
+		r = RRD('collectd/collectd/rrd/%s/load/load.rrd' % domain)
+		for line in r.query(AVERAGE().resolution(10).start('-10m')).execute():
+			print line
 	print (time.time() -chrono) *1000 , 'ms'
 	
