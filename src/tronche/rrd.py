@@ -4,9 +4,11 @@ from subprocess import Popen, PIPE
 from datetime import datetime
 
 def none_filter(stuff):
+	"A dummy filter wich does nothing"
 	return stuff
 
 class Query(object):
+	"Querying round robin database"
 	def __init__(self, consolidation='AVERAGE', resolution=None, start=None,
 			end=None, filter=none_filter, column=None):
 		self.consolidation = consolidation
@@ -37,13 +39,19 @@ def LAST(**args):
 	return Query('LAST', **args)
 
 class RRD(object):
+	"Round robin database"
 	def __init__(self, path):
 		self.path = path
 	def _query(self, command, column=None, filter=none_filter):
 		env = os.environ
 		env['LC_NUMERIC'] = 'en_US'
 		return Result(Popen('rrdtool fetch %s %s ' % (self.path, command), env= env, shell=True, stdout=PIPE).stdout, column, filter)
-	def query(self, *args, **dico):
+	def fetch(self, *args, **dico):
+		"""
+r = RRD('toto.rrd')
+for ts, value in r.fetch('AVERAGE', resolution=5, start='-5m'):
+	print ts, value
+"""
 		return Query(**dico)(self)
 
 class Result(object):
@@ -83,7 +91,7 @@ if __name__ == '__main__':
 		for ts, value in query(r):
 			print ts, value
 		print "----------------"
-		for ts, value in r.query('AVERAGE', resolution=5, start='-5m'):
+		for ts, value in r.fetch('AVERAGE', resolution=5, start='-5m'):
 			print ts, value
 		print "----------------"
 		print list(query(r))[-3]
