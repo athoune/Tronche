@@ -18,6 +18,7 @@ class Query(object):
 		self.filter = filter
 		self.column = column
 	def command(self):
+		"command line option for 'rrd fetch'"
 		buff = self.consolidation
 		if self.resolution != None:
 			buff += ' -r %i' % self.resolution
@@ -30,12 +31,16 @@ class Query(object):
 		return rrd._query(self.command(), self.column, self.filter)
 
 def AVERAGE(**args):
+	"Average query"
 	return Query('AVERAGE', **args)
 def MIN(**args):
+	"Min query"
 	return Query('MIN', **args)
 def MAX(**args):
+	"Max query"
 	return Query('MAX', **args)
 def LAST(**args):
+	"Last query"
 	return Query('LAST', **args)
 
 class RRD(object):
@@ -54,7 +59,13 @@ for ts, value in r.fetch('AVERAGE', resolution=5, start='-5m'):
 """
 		return Query(**dico)(self)
 
+def float_or_none(data):
+	"Convert a string to a float, or keep it as None"
+	if data == None: return None
+	else: return float(data)
+
 class Result(object):
+	"Querying a round robin database return a Result"
 	def __init__(self, raw, column = 0, filter = none_filter):
 		self.raw = raw
 		self.column = column
@@ -65,20 +76,14 @@ class Result(object):
 			cpt += 1
 			if cpt > 2:
 				ts, values = line[:-1].split(': ',1)
+				dt = datetime.fromtimestamp(int(ts))
 				value = values.split(' ')
 				if value == 'nan':
-					yield (datetime.fromtimestamp(int(ts)),  None)
+					yield dt,  None
 				if self.column != None:
-					yield (datetime.fromtimestamp(int(ts)), self.filtr(float(value[self.column])))
+					yield dt, self.filtr(float(value[self.column]))
 				else:
-					r= []
-					for v in value:
-						if v == None:
-							r.append(None)
-						else:
-							r.append(float(v))
-					yield (datetime.fromtimestamp(int(ts)), self.filtr(r))
-
+					yield dt, self.filtr(map(float_or_none, value))
 
 if __name__ == '__main__':
 	import time
