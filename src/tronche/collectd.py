@@ -17,11 +17,11 @@ class Collectd(object):
 	"Collectd contains domains"
 	def __init__(self, path):
 		self.path = path
-		self.domains = {}
-		for d in os.listdir(os.path.join(path, 'rrd')):
-			self.domains[d] = Domain(os.path.join(path, 'rrd', d))
+		self.domains = []
+		self.domains = os.listdir(os.path.join(path, 'rrd'))
 	def __iter__(self):
-		return iter(self.domains.values())
+		for d in self.domains:
+			yield Domain(os.path.join(self.path, 'rrd', d))
 
 class Domain(object):
 	"Domain contains sondes"
