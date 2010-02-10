@@ -17,22 +17,24 @@ class Collectd(object):
 	"Collectd contains domains"
 	def __init__(self, path):
 		self.path = path
-		self.domains = []
 		self.domains = os.listdir(os.path.join(path, 'rrd'))
+	def domain(self, d):
+		return Domain(os.path.join(self.path, 'rrd', d))
 	def __iter__(self):
 		for d in self.domains:
-			yield Domain(os.path.join(self.path, 'rrd', d))
+			yield self.domain(d)
 
 class Domain(object):
 	"Domain contains sondes"
 	def __init__(self, path):
 		self.path = path
-		self.sondes = {}
 		_, self.name = os.path.split(path)
-		for s in os.listdir(path):
-			self.sondes[s] = Sonde(os.path.join(path, s))
+		self.sondes = os.listdir(path)
+	def sonde(self, s):
+		return Sonde(os.path.join(self.path, s))
 	def __iter__(self):
-		return iter(self.sondes.values())
+		for s in self.sondes:
+			yield self.sonde(s)
 
 class Sonde(object):
 	"Sonde contains rrd"
@@ -56,7 +58,7 @@ if __name__ == '__main__':
 	chrono = time.time()
 	for domain in Collectd('collectd/'):
 		#print domain.sondes
-		for r in domain.sondes['load']:
+		for r in domain.sonde('load'):
 			attrs = r.getData()
 			print "last update", datetime.fromtimestamp(int(attrs["lastupdate"]))
 			print "file name", attrs['filename']
