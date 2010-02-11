@@ -90,6 +90,25 @@ for ts, value in r.fetch('AVERAGE', resolution=5, start='-5m'):
 	print ts, value
 """
 		return Query(**dico)(self)
+	def info(self):
+		info = {
+			'ds'  :{},
+			'rra' :{}}
+		for line in rrd_wrapper('info %s' % self.path):
+			k,v = line[:-1].split(' = ')
+			if k[:3] == 'ds[':
+				d,vv = k.split('.',1)
+				kk = d[3:-1]
+				if not info['ds'].has_key(kk):
+					info['ds'][kk] = {}
+				info['ds'][kk][vv] = v
+			else:
+				if k[:4] == 'rra[':
+					r,vv = k.split('.',1)
+					info['rra'][int(r[4:-1])] = vv
+				else:
+					info[k] = v
+		return info
 
 def float_or_none(data):
 	"Convert a string to a float, or keep it as None"
@@ -137,7 +156,12 @@ if __name__ == '__main__':
 		for domain in os.listdir('collectd/rrd/') :
 			print datetime.fromtimestamp(int(list(pipe('last collectd/rrd/%s/load/load.rrd' % domain))[0]))
 			print list(pipe('info collectd/rrd/%s/load/load.rrd' % domain))
-		
+	def info():
+		for domain in os.listdir('collectd/rrd/') :
+			print domain
+			r = RRD('collectd/rrd/%s/load/load.rrd' % domain)
+			print r.info()
+
 	chrono = time.time()
-	query()
+	info()
 	print (time.time() -chrono) *1000 , 'ms'
