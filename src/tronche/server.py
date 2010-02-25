@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from datetime import datetime
+
 from bottle import route, run, view, send_file
 from collectd import Collectd
 
@@ -19,6 +21,23 @@ def domain():
 @route('domain/:domain')
 def sonde(domain):
 	return {'sondes': list(collectd.domain(domain).sondes)}
+
+@route('rrd/:domain/:sonde/:rrd')
+def rrd(domain, sonde, rrd):
+	r = collectd.domain(domain).sonde(sonde).rrd(rrd)
+	attrs = r.getData()
+	return {
+		"last update": attrs["lastupdate"],
+		"file name": attrs['filename'],
+		"step": attrs['step'],
+		"ds": len(r.ds),
+		"rra": len(r.rra)
+	}
+
+"""
+@route('rrd/:domain/:sonde/:rrd/:method/:resolution/:start')
+def query(domain, sonde, rrd, method, resolution, start):
+"""
 
 @route('/data/:filename')
 def static(filename):
