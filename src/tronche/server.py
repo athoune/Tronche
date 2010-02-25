@@ -25,7 +25,7 @@ def all(domain):
 		tas[sonde.name] = []
 		for rrd in sonde:
 			print rrd
-			tas[sonde.name].append(rrd.name)
+			tas[sonde.name].append({rrd.name: rrd.info()['ds'].keys()})
 	return tas
 
 @route('domain/:domain')
