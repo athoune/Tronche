@@ -13,8 +13,13 @@ $(function() {
       );
       $.getJSON('domain/' + item, null, function(data) {
         $.each(data.sondes, function(i, item) {
-          console.log(item);
-          domain.append($('<li>').text(item));
+          domain.append(
+            $('<li>').append(
+              $('<a href="#">').text(item).click(function() {
+                
+              })
+            )
+          );
         });
       });
     });

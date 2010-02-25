@@ -18,6 +18,16 @@ def index():
 def domain():
 	return {'domains': list(collectd.domains)}
 
+@route('domain/:domain/all')
+def all(domain):
+	tas = {}
+	for sonde in collectd.domain(domain):
+		tas[sonde.name] = []
+		for rrd in sonde:
+			print rrd
+			tas[sonde.name].append(rrd.name)
+	return tas
+
 @route('domain/:domain')
 def sonde(domain):
 	return {'sondes': list(collectd.domain(domain).sondes)}
