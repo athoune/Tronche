@@ -8,6 +8,7 @@ Simple RRD wrapping for fetching data, when pyrrd is not enough
 """
 
 from datetime import datetime
+import os
 
 try:
 	import pexpect
@@ -80,6 +81,9 @@ class RRD(object):
 	"Round robin database"
 	def __init__(self, path):
 		self.path = path
+		self.folder, self.name = os.path.split(path)
+	def __repr__(self):
+		return "<RRD %s>" % self.path
 	def _query(self, command, column=None, filter=none_filter):
 		#return Result(Popen('rrdtool fetch %s %s ' % (self.path, command), env= env, shell=True, stdout=PIPE).stdout, column, filter)
 		return Result(rrd_wrapper('fetch %s %s' % (self.path, command)), column, filter)
@@ -160,7 +164,7 @@ if __name__ == '__main__':
 		for domain in os.listdir('collectd/rrd/') :
 			print domain
 			r = RRD('collectd/rrd/%s/load/load.rrd' % domain)
-			print r.info()
+			print r.info()['ds'].keys()
 
 	chrono = time.time()
 	info()
