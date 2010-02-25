@@ -4,8 +4,7 @@ import os
 import os.path
 from datetime import datetime
 
-from pyrrd.rrd import DataSource, RRA, RRD
-
+from rrd import RRD
 __author__ = "mathieu@garambrogne.net"
 __version__ = "0.1"
 
@@ -43,10 +42,10 @@ class Sonde(object):
 		self.folder, self.name = os.path.split(path)
 		self.rrds = []
 		for r in os.listdir(path):
-			name, ext = os.path.splitext(self.name)
+			name, ext = os.path.splitext(r)
 			self.rrds.append(name)
 	def rrd(self, key):
-		return RRD(os.path.join(self.path, "%s.rrd" % key), mode='r')
+		return RRD(os.path.join(self.path, "%s.rrd" % key))
 	def __repr__(self):
 		return "<Sonde %s>" %self.name
 	def __iter__(self):
@@ -58,8 +57,11 @@ if __name__ == '__main__':
 	chrono = time.time()
 	for domain in Collectd('collectd/'):
 		#print domain.sondes
-		for r in domain.sonde('load'):
-			attrs = r.getData()
+		for r in domain.sonde('apache'):
+			attrs = r.info()
+			print attrs
+			print
+			"""
 			print "last update", datetime.fromtimestamp(int(attrs["lastupdate"]))
 			print "file name", attrs['filename']
 			print "step", attrs['step']
@@ -68,4 +70,5 @@ if __name__ == '__main__':
 			for ds in r.ds:
 				data = ds.getData()
 				print data['name'], data.keys()
+			"""
 	print (time.time() -chrono) *1000 , 'ms'
