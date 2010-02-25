@@ -164,7 +164,7 @@ if __name__ == '__main__':
 		for domain in os.listdir('collectd/rrd/') :
 			print domain
 			r = RRD('collectd/rrd/%s/load/load.rrd' % domain)
-			print r.info()['ds'].keys()
+			print r.info()
 
 	chrono = time.time()
 	info()
