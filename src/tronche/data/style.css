@@ -1,3 +1,30 @@
 * {
 	font-family: monaco;
+	font-size: 10pt;
 }
+
+li {
+	list-style-type: none;
+	background-color: #f7f7f7;
+}
+
+a {
+	color: black;
+}
+ul, li {
+	padding: 3px;
+}
+
+#domains {
+	background-color: #b5b5b5;
+	width: 200px;
+}
+
+.sondes {
+	background-color: #cfcfcf;
+}
+.sondes  li {
+	background-color: #f4f6f6;
+	margin-bottom: 3px;
+}
+

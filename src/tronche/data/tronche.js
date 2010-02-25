@@ -2,7 +2,7 @@ $(function() {
   $.getJSON('domains', null, function(data) {
     var domains = $('#domains');
     $.each(data.domains, function(i, item) {
-      var domain = $('<ul>');
+      var domain = $('<ul class="sondes">');
       domains.append(
         $('<li>')
           .append($('<a href="#">').text(item).click(function(){
