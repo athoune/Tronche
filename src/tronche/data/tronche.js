@@ -3,9 +3,14 @@ $(function() {
     var domains = $('#domains');
     $.each(data.domains, function(i, item) {
       var domain = $('<ul>');
-      domains.append($('<li>').text(item).click(function(){
-        $(this).children().toggle();
-      }).append('<div>').append(domain));
+      domains.append(
+        $('<li>')
+          .append($('<a href="#">').text(item).click(function(){
+            $(this).siblings().toggle();
+            return false;
+          }))
+        .append($('<div>').hide().append(domain))
+      );
       $.getJSON('domain/' + item, null, function(data) {
         $.each(data.sondes, function(i, item) {
           console.log(item);
